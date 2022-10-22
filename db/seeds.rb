@@ -1,7 +1,25 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
-#   Character.create(name: "Luke", movie: movies.first)
+Role.find_or_create_by({name: "admin", display_name: "Admin"})
+
+def create_admin_user!(email)
+  password = SecureRandom.hex
+
+  admin_user = User.where(email: email).first
+  return if admin_user.present?
+
+  admin_user ||= User.new(
+    email: email,
+    name: "Bruce Wayne",
+    password: password,
+    password_confirmation: password
+  )
+
+  admin_user.save!
+  admin_user.user << Role.find_by_name("admin")
+
+  puts "The following admin user has been created:"
+  puts ""
+  puts "  Email: #{admin_user.email}"
+  puts "  Password: #{admin_user.password}"
+end
+
+create_admin_user!(ENV.fetch("ADMIN_EMAIL"))
