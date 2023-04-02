@@ -7,7 +7,12 @@ class Ability
     can :read, Article
 
     return unless user.present?
-    can %i[update destroy edit], Article, user: user
-    can %i[create new], Article
+
+    if user.is_admin?
+      can :manage, Article
+    else
+      can %i[update destroy edit], Article, user: user
+      can %i[create new], Article
+    end
   end
 end
